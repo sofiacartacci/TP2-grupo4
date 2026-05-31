@@ -1,6 +1,12 @@
-import { Router } from 'express';
+import { Router } from "express";
+import cineRoutes from "./cineRoutes.js";
+import peliculaRoutes from "./peliculaRoutes.js";
+import funcionRoutes from "./funcionRoutes.js";
 
 const router = Router();
 
+router.use("/cines", cineRoutes);
+router.use("/peliculas", peliculaRoutes);
+router.use("/funciones", funcionRoutes);
 
 export default router;
