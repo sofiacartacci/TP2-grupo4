@@ -1,10 +1,24 @@
-import { DataTypes } from 'sequelize';
-import sequelize from '../connection/sequelize.js';
+import { DataTypes, Model } from "sequelize";
+import sequelize from "../connection/sequelize.js";
 
-const Cine = sequelize.define('Cine', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  nombre: { type: DataTypes.STRING, allowNull: false },
-  direccion: { type: DataTypes.STRING, allowNull: false },
-}, { tableName: 'cines' });
+class Cine extends Model {}
+
+Cine.init(
+  {
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    direccion: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+  },
+  {
+    sequelize: sequelize,
+    modelName: "Cine",
+    tableName: "cines",
+  }
+);
 
 export default Cine;
