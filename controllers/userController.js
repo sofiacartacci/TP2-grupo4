@@ -66,14 +66,12 @@ class userController {
   };
 
   me = async (req, res, next) => {
-    try {
-      const { payload } = req.cookies;
-      const user = await this.userService.me(payload);
-      res.status(200).send({ success: true, message: user });
-    } catch (error) {
-      next(error);
-    }
-  };
+  try {
+    res.status(200).send({ success: true, message: req.user }); 
+  } catch (error) {
+    next(error);
+  }
+};
 }
 
 export default userController;
