@@ -1,5 +1,5 @@
 import { DataTypes,Model } from 'sequelize';
-import sequelize from '../connection/sequelize';
+import sequelize from '../connection/sequelize.js';
 
 import bycrypt from 'bcrypt';
 
@@ -61,7 +61,7 @@ User.init(
         allowNull:false,
         validate:{
             isDate:true,
-            isBefore: new Date().toISOString.split("T")[0]
+            isBefore: new Date().toISOString().split("T")[0]
         },
     },
     },

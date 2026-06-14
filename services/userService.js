@@ -1,73 +1,52 @@
-import {generateToken,verifyToken} from "../utils/jwt.js"
+import { generateToken } from "../utils/jwt.js";
 
-class userService {
+class UserService {
+  constructor(user, rol) {  
+    this.user = user;
+    this.rol = rol;
+  }
 
-    constructor(user, rol){
-        this.user=user;
-        this.rol=rol;
-    }
+  getAllUsers = async () => {
+    return await this.user.findAll({
+      attributes: ["id", "nombre", "apellido", "email", "telefono", "rolId"],
+      include: [{ model: this.rol, attributes: ["nombre"] }],
+    });
+  };
 
-    getAllUsers = async () =>{
-        const users = await this.user.findAll({
-            attributes : ["id","nombre","apellido","email","rolId"],
-            include: [{
-                model: this.rol,
-                attributes:["nombre"],
-            },
-            ],
-        });
-        return users;
-    };
+  getUserById = async (id) => {  
+    return await this.user.findOne({
+      where: { id },
+      attributes: ["id", "nombre", "apellido", "email", "telefono", "rolId"],
+      include: [{ model: this.rol, attributes: ["nombre"] }],
+    });
+  };
 
-    getUserById = async () =>{
-        const user = await this.user.findOne({
-            where: {id},
-            attributes: ["id","nombre","email","rolId"],
-        })
-        return user;
-    };
+  createUser = async (data) => {
+    return await this.user.create(data); 
+  };
 
-    creteUser = async ({nombre,apellido,email,password,rolId,telefono,fechaNacimiento})=>{
-        const user = await this.user.create({
-        nombre,apellido,email,password,rolId,telefono,fechaNacimiento
-        })
-        return user;
-    };
+  deleteUser = async (id) => {
+    return await this.user.destroy({ where: { id } }); 
+  };
 
-    updateUser = async ()=>{
-        
-    }
+  login = async ({ email, password }) => {  
+    const user = await this.user.findOne({
+      where: { email },
+      attributes: ["id", "nombre", "apellido", "email", "password", "rolId"],
+    });
+    if (!user) throw new Error("user not found");
 
-    deleteUser = async(id)=>{
-    const deleted = await this.user.destroy({
-        where:{id}
-    })
-    return deleted;
-    };
+    const isValid = await this.user.validatePassword(password, user.password); 
+    if (!isValid) throw new Error("invalid password");
 
-    login = async(email,password) =>{
-        const user = await this.user.findOne({
-            where: {email},
-            attributes:["id","nombre","apellido","email","password","rolId"]
-        })
-        if(!user) throw new Error("User not found");
-        const validarPassword = await this.user.validarPassword(
-            password,user.password,
-        );
-        if(!validarPassword) throw new Error("Invalid password");
-        const payload = {
-            id: user.id,
-            nombre: user.nombre,
-            apellido: user.apellido,
-            rolId: user.rolId,
-        }
-        const token = generateToken(payload);
-        return{toke,id: user.id}
-    };
+    const payload = { id: user.id, nombre: user.nombre, rolId: user.rolId };
+    const token = generateToken(payload); 
+    return { token, id: user.id };       
+  };
 
-    me = async()=>{
-        const user = verifyToken(payload);
-        return user;
-    };
+  me = async (payload) => { 
+    return payload;
+  };
 }
-export default userService;
+
+export default UserService;
