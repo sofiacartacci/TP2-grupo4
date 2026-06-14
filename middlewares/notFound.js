@@ -1,4 +1,4 @@
-export const notFound = (err,req, res, next) => {
+export const notFound = (req, res, next) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 };
 

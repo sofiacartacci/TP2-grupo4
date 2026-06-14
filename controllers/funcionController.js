@@ -3,26 +3,26 @@ class FuncionController {
     this.funcionService = service;
   }
 
-  getAllFunciones = async (req, res) => {
+  getAllFunciones = async (req, res, next) => {
     try {
       const funciones = await this.funcionService.getAllFunciones();
       res.status(200).send({ success: true, message: funciones });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  getFuncionById = async (req, res) => {
+  getFuncionById = async (req, res, next) => {
     try {
       const { id } = req.params;
       const funcion = await this.funcionService.getFuncionById(id);
       res.status(200).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  createFuncion = async (req, res) => {
+  createFuncion = async (req, res, next) => {
     try {
       const { fecha, hora, sala, precio, cineId, peliculaId } = req.body;
       if (!fecha) throw new Error("fecha is required");
@@ -32,28 +32,28 @@ class FuncionController {
       const funcion = await this.funcionService.createFuncion({ fecha, hora, sala, precio, cineId, peliculaId });
       res.status(201).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  updateFuncion = async (req, res) => {
+  updateFuncion = async (req, res, next) => {
     try {
       const { id } = req.params;
       const { fecha, hora, sala, precio, cineId, peliculaId } = req.body;
       const funcion = await this.funcionService.updateFuncion(id, { fecha, hora, sala, precio, cineId, peliculaId });
       res.status(200).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  deleteFuncion = async (req, res) => {
+  deleteFuncion = async (req, res, next) => {
     try {
       const { id } = req.params;
       const funcion = await this.funcionService.deleteFuncion(id);
       res.status(200).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 }

@@ -1,86 +1,79 @@
-class userController{ 
+class userController {
+  constructor(service) {
+    this.userService = service;
+  }
 
-    constructor(service){
-        this.userService = service;
-    }
-
-getAllUsers = async (req,res)=>{
+  getAllUsers = async (req, res, next) => {
     try {
-        const users = await this.userService.getAllUsers();
-        res.status(200).send({success: true , message: users})
-    } catch(error){
-        res.status(400).send({success: false , message:error.message});
+      const users = await this.userService.getAllUsers();
+      res.status(200).send({ success: true, message: users });
+    } catch (error) {
+      next(error);
     }
-};
+  };
 
-getUserById = async (req,res)=>{
-    try{
-        const {id}=req.params
-        const user = await this.userService.getUserById(id)
-        res.status(200).send({success: true , message: user})
-    }catch(error){
-        res.status(400).send({success: false , message:error.message})
+  getUserById = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const user = await this.userService.getUserById(id);
+      res.status(200).send({ success: true, message: user });
+    } catch (error) {
+      next(error);
     }
-};
+  };
 
-createUser = async (req,res)=>{
-    //TODO revisar throw error
-    try{
-    const requiered = ["nombre", "apellido", "email", "password", "telefono", "fechaNacimiento"];
-    for (const field of requiered){
-        if(!req.body[field]) throw new Error(`${field} is required`)
+  createUser = async (req, res, next) => {
+    try {
+      const required = ["nombre", "apellido", "email", "password", "telefono", "fechaNacimiento"]; 
+      for (const field of required) {
+        if (!req.body[field]) throw new Error(`${field} is required`);
+      }
+      const user = await this.userService.createUser(req.body);
+      res.status(201).send({ success: true, message: user });
+    } catch (error) {
+      next(error);
     }
-    const user = await this.userService.createUser(req.body);
-        res.status(200).send({success: true, message: user})
-    }catch(error){
-        res.status(400).send({success: false , message:error.message})
-}
-};
+  };
 
-updateUser = async (req,res)=>{
-    //TODO 
-};
+  updateUser = async (req, res, next) => {
+    // TODO: pendiente de implementar
+  };
 
-deleteUser = async (req,res)=>{
-
-    ///TODO 
-    try{
-        const {id} = req.params;
-        if(!id) throw new Error("Id obligatorio");
-        const deleted = await this.userService.deleteUser(id);
-         if(deleted === 1){
-             res.status(200).send({success: true , message: deleted})
-         }
-         else{
-            throw new Error("No se borro el usuario")
-         }
-    }catch(error){
-        res.status(400).send({success: false , message:error.message});
+  deleteUser = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      if (!id) throw new Error("Id obligatorio");
+      const deleted = await this.userService.deleteUser(id);
+      if (deleted === 1) {
+        res.status(200).send({ success: true, message: deleted });
+      } else {
+        throw new Error("No se borro el usuario");
+      }
+    } catch (error) {
+      next(error);
     }
-};
+  };
 
-login = async (req,res)=>{
-    try{
-        const { email , password} = req.body;
-        const user = await this.userService.login({email,password});
-        res.cookies("payload",user.token)
-        res.status(200).send({success: true , message:user.id})
-    }catch(error){
-        res.status(400).send({success: false , message:error.message})   
+  login = async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+      const user = await this.userService.login({ email, password });
+      res.cookie("payload", user.token); 
+      res.status(200).send({ success: true, message: user.id });
+    } catch (error) {
+      next(error);
     }
+  };
 
-};
-
-me = async (req,res)=>{
-    try{
-        const {payload} = req.cookies
-        const user = await this.userService.me(payload);
-        res.status(200).send({success: true , message:user})
-    }catch(error){
-        res.status(400).send({success: false , message:error.message})
+  me = async (req, res, next) => {
+    try {
+      const { payload } = req.cookies;
+      const user = await this.userService.me(payload);
+      res.status(200).send({ success: true, message: user });
+    } catch (error) {
+      next(error);
     }
-};
-
+  };
 }
 
 export default userController;
