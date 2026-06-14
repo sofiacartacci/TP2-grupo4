@@ -22,7 +22,7 @@ User.init(
       type: DataTypes.STRING(50),
       allowNull: false,
       validate: {
-        len: [3, 50], // ⬅️ idem
+        len: [3, 50],
         is: /^[a-z]+$/i,
       },
     },
