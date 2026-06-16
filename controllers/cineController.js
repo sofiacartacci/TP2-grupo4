@@ -22,28 +22,31 @@ class CineController {
     return idNumero;
   };
 
-  getAllCines = async (req, res) => {
+  getAllCines = async (req, res, next) => {
     try {
       const cines = await this.cineService.getAllCines();
       res.status(200).send({ success: true, message: cines });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  getCineById = async (req, res) => {
+  getCineById = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
       const cine = await this.cineService.getCineById(id);
-      if (!cine)
-        return res.status(404).send({ success: false, message: "Cine no encontrado" });
+      if (!cine) {
+        const error = new Error("Cine no encontrado");
+        error.status = 404;
+        throw error;
+      }
       res.status(200).send({ success: true, message: cine });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  createCine = async (req, res) => {
+  createCine = async (req, res, next) => {
     try {
       const { nombre, direccion } = req.body;
       this.validarDatosCine({ nombre, direccion });
@@ -53,19 +56,22 @@ class CineController {
       });
       res.status(201).send({ success: true, message: cine });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  updateCine = async (req, res) => {
+  updateCine = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
       const { nombre, direccion } = req.body;
       this.validarDatosCine({ nombre, direccion });
 
       const cineExistente = await this.cineService.getCineById(id);
-      if (!cineExistente)
-        return res.status(404).send({ success: false, message: "Cine no encontrado" });
+      if (!cineExistente) {
+        const error = new Error("Cine no encontrado");
+        error.status = 404;
+        throw error;
+      }
 
       const cine = await this.cineService.updateCine(id, {
         nombre: nombre.trim(),
@@ -73,21 +79,25 @@ class CineController {
       });
       res.status(200).send({ success: true, message: cine });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  deleteCine = async (req, res) => {
+  deleteCine = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
+
       const cineExistente = await this.cineService.getCineById(id);
-      if (!cineExistente)
-        return res.status(404).send({ success: false, message: "Cine no encontrado" });
+      if (!cineExistente) {
+        const error = new Error("Cine no encontrado");
+        error.status = 404;
+        throw error;
+      }
 
       const cine = await this.cineService.deleteCine(id);
       res.status(200).send({ success: true, message: cine });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 }

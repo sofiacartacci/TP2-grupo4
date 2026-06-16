@@ -28,77 +28,80 @@ class PeliculaController {
     return idNumero;
   };
 
-  getAllPeliculas = async (req, res) => {
+  getAllPeliculas = async (req, res, next) => {
     try {
       const peliculas = await this.peliculaService.getAllPeliculas();
       res.status(200).send({ success: true, message: peliculas });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  getPeliculaById = async (req, res) => {
+  getPeliculaById = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
       const pelicula = await this.peliculaService.getPeliculaById(id);
-      if (!pelicula)
-        return res.status(404).send({ success: false, message: "Película no encontrada" });
+      if (!pelicula) {
+        const error = new Error("Película no encontrada");
+        error.status = 404;
+        throw error;
+      }
       res.status(200).send({ success: true, message: pelicula });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  createPelicula = async (req, res) => {
+  createPelicula = async (req, res, next) => {
     try {
       const { titulo, duracion, genero, sinopsis } = req.body;
       this.validarDatosPelicula({ titulo, duracion, genero, sinopsis });
       const pelicula = await this.peliculaService.createPelicula({
-        titulo: titulo.trim(),
-        duracion: Number(duracion),
-        genero,
-        sinopsis,
+        titulo: titulo.trim(), duracion: Number(duracion), genero, sinopsis,
       });
       res.status(201).send({ success: true, message: pelicula });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  updatePelicula = async (req, res) => {
+  updatePelicula = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
       const { titulo, duracion, genero, sinopsis } = req.body;
       this.validarDatosPelicula({ titulo, duracion, genero, sinopsis });
 
       const peliculaExistente = await this.peliculaService.getPeliculaById(id);
-      if (!peliculaExistente)
-        return res.status(404).send({ success: false, message: "Película no encontrada" });
+      if (!peliculaExistente) {
+        const error = new Error("Película no encontrada");
+        error.status = 404;
+        throw error;
+      }
 
       const pelicula = await this.peliculaService.updatePelicula(id, {
-        titulo: titulo.trim(),
-        duracion: Number(duracion),
-        genero,
-        sinopsis,
+        titulo: titulo.trim(), duracion: Number(duracion), genero, sinopsis,
       });
       res.status(200).send({ success: true, message: pelicula });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  deletePelicula = async (req, res) => {
+  deletePelicula = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
 
       const peliculaExistente = await this.peliculaService.getPeliculaById(id);
-      if (!peliculaExistente)
-        return res.status(404).send({ success: false, message: "Película no encontrada" });
+      if (!peliculaExistente) {
+        const error = new Error("Película no encontrada");
+        error.status = 404;
+        throw error;
+      }
 
       const pelicula = await this.peliculaService.deletePelicula(id);
       res.status(200).send({ success: true, message: pelicula });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 }

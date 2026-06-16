@@ -39,80 +39,82 @@ class FuncionController {
     return idNumero;
   };
 
-  getAllFunciones = async (req, res) => {
+  getAllFunciones = async (req, res, next) => {
     try {
       const funciones = await this.funcionService.getAllFunciones();
       res.status(200).send({ success: true, message: funciones });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  getFuncionById = async (req, res) => {
+  getFuncionById = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
       const funcion = await this.funcionService.getFuncionById(id);
-      if (!funcion)
-        return res.status(404).send({ success: false, message: "Función no encontrada" });
+      if (!funcion) {
+        const error = new Error("Función no encontrada");
+        error.status = 404;
+        throw error;
+      }
       res.status(200).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  createFuncion = async (req, res) => {
+  createFuncion = async (req, res, next) => {
     try {
       const { fecha, hora, sala, precio, cineId, peliculaId } = req.body;
       this.validarDatosFuncion({ fecha, hora, sala, precio, cineId, peliculaId });
       const funcion = await this.funcionService.createFuncion({
-        fecha,
-        hora: hora.trim(),
-        sala,
-        precio,
-        cineId: Number(cineId),
+        fecha, hora: hora.trim(), sala, precio, cineId: Number(cineId),
         peliculaId: Number(peliculaId),
       });
       res.status(201).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  updateFuncion = async (req, res) => {
+  updateFuncion = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
       const { fecha, hora, sala, precio, cineId, peliculaId } = req.body;
       this.validarDatosFuncion({ fecha, hora, sala, precio, cineId, peliculaId });
 
       const funcionExistente = await this.funcionService.getFuncionById(id);
-      if (!funcionExistente)
-        return res.status(404).send({ success: false, message: "Función no encontrada" });
+      if (!funcionExistente) {
+        const error = new Error("Función no encontrada");
+        error.status = 404;
+        throw error;
+      }
 
       const funcion = await this.funcionService.updateFuncion(id, {
-        fecha,
-        hora: hora.trim(),
-        sala,
-        precio,
-        cineId: Number(cineId),
+        fecha, hora: hora.trim(), sala, precio, cineId: Number(cineId),
         peliculaId: Number(peliculaId),
       });
       res.status(200).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 
-  deleteFuncion = async (req, res) => {
+  deleteFuncion = async (req, res, next) => {
     try {
       const id = this.validarId(req.params.id);
+
       const funcionExistente = await this.funcionService.getFuncionById(id);
-      if (!funcionExistente)
-        return res.status(404).send({ success: false, message: "Función no encontrada" });
+      if (!funcionExistente) {
+        const error = new Error("Función no encontrada");
+        error.status = 404;
+        throw error;
+      }
 
       const funcion = await this.funcionService.deleteFuncion(id);
       res.status(200).send({ success: true, message: funcion });
     } catch (error) {
-      res.status(400).send({ success: false, message: error.message });
+      next(error);
     }
   };
 }
