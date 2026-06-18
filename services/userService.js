@@ -47,6 +47,15 @@ class UserService {
   me = async (payload) => { 
     return payload;
   };
+
+  updateUser = async (id,data)=>{
+    if(data.password){
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(data.password,salt);
+    }
+    const [updated] = await this.user.update(data,{where:{id}});
+return updated;
+  };
 }
 
 export default UserService;

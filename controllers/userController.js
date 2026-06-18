@@ -35,9 +35,19 @@ class userController {
     }
   };
 
-  updateUser = async (req, res, next) => {
-    // TODO: pendiente de implementar
-  };
+  updateUser = async (req, res, next) => { ///PENSAR SI LIMITAR QUE SE PUEDE ACTUALIZAR
+   try{
+    const { id } = req.params;
+    if(!id) throw new Error("ID requerido");
+    if(Object.keys(req.body).length===0)
+        throw new Error("No hay datos para actualizar");
+    const updated = await this.userService.updateUser(id,req.body); 
+  if(updated===0) throw new Error("Usuario no encontrado")
+    res.status(200).send({success:true,message:"Usuario actualizado correctamente"});
+   }catch(error){
+    next(error);
+   }
+   };
 
   deleteUser = async (req, res, next) => {
     try {
