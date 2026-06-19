@@ -14,29 +14,40 @@ User.init(
       type: DataTypes.STRING(50),
       allowNull: false,
       validate: {
-        len: [3, 50],
-        is: /^[a-z]+$/i,
-      },
+        notEmpty:{msg:"El nombre no puede estar vacío"},
+        len: {args:[3, 50],msg:"El nombre debe tener entre 3 y 50 caractecteres"},
+        is: {args:/^[a-z]+$/i,msg:"El nombre solo puede contener letras"},
+      }
     },
     apellido: {
       type: DataTypes.STRING(50),
       allowNull: false,
       validate: {
-        len: [3, 50],
-        is: /^[a-z]+$/i,
-      },
+        notEmpty:{msg:"El apellido no puede estar vacío"},
+        len:{args: [3, 50],msg:"El apellido debe tener entre 3 y 50 caractecteres"},
+        is: {args: /^[a-z]+$/i,msg:"El apellido solo puede contener letras"},
+      }
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique:{msg:"El email ya esta registrado"},
       validate: {
-        isEmail: true,
-      },
+        notEmpty:{msg:"El email no puede estar vacío"},
+        isEmail: {msg:"El formato dde email no es valido"},
+      }
     },
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate:{
+        notEmpty:{msg:"La contraseña no puede estar vacía"},
+        len: {args:[8],msg:"La contraseña debe tener mas de 8 caracteres"},
+        is:{
+          args:/^(?!\s+$).+/,
+          msg:"La contraseña no puede ser solo espacios"
+        },
+      }
     },
     rolId: {
       type: DataTypes.INTEGER,
@@ -46,17 +57,20 @@ User.init(
       type: DataTypes.STRING(15),
       allowNull: false,
       validate: {
-        is: /^[0-9]+$/,
-        len: [8, 15],
-      },
+        notEmpty:{msg:"El telefono no puede estar vacío"},
+        is: {args:/^[0-9]+$/,msg:"El apellido debe tener entre 3 y 50 caractecteres"},
+        len: {args:[8, 15], msg:"El largo del telefono debe estar entre 8 y 15 caracteres"}
+      }
     },
     fechaNacimiento: {
       type: DataTypes.DATEONLY,
       allowNull: false,
       validate: {
-        isDate: true,
-        isBefore: new Date().toISOString().split("T")[0],
-      },
+        notEmpty:{msg:"La fecha de nacimiento es obligatoria"},
+        isDate: {msg:"La fecha de nacimiento deber ser una fecha válida"},
+        isBefore:{ args:new Date().toISOString().split("T")[0],
+                   msg:"La fecha de nacimiento deber ser anterior a hoy"}
+      }
     },
   },
   {
@@ -70,5 +84,16 @@ User.beforeCreate(async (user) => {
   const hash = await bcrypt.hash(user.password, salt); 
   user.password = hash;
 });
+
+User.beforeUpdate(async (user) => {
+  if (user.changed("password")) {
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(user.password, salt);
+  }
+});
+
+
+
+
 
 export default User;
