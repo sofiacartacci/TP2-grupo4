@@ -49,12 +49,25 @@ class UserService {
   };
 
   updateUser = async (id,data)=>{
+
+    const user = await this.user.findOne({id});
+    if(!user) return 0;
+
+    const mismosDatos = Object.keys(data).every(key=>{
+      if(key=== "password") return false;
+      return data[key] === user[key];
+    });
+
+    if (mismosDatos){
+      throw new Error("Los datos envidados son iguales a los actuales")
+    }
+
     if(data.password){
       const salt = await bcrypt.genSalt(10);
       data.password = await bcrypt.hash(data.password,salt);
     }
     const [updated] = await this.user.update(data,{where:{id}});
-return updated;
+  return updated;
   };
 }
 
