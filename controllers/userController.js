@@ -35,7 +35,7 @@ class userController {
     }
   };
 
-  updateUser = async (req, res, next) => { ///PENSAR SI LIMITAR QUE SE PUEDE ACTUALIZAR
+  updateUser = async (req, res, next) => { 
    try{
     const { id } = req.params;
     if(!id) throw new Error("ID requerido");

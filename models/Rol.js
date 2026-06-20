@@ -8,8 +8,12 @@ Rol.init(
     nombre: {
       type: DataTypes.STRING(50),
       allowNull: false,
-      unique: true,
-      validate: { is: /^[a-z]+$/i },
+      unique:{ msg:"El nombre del rol ya existe"},
+      validate: {
+        notEmpty:{msg:"El nombre del rol no puede estar vacío"},
+        len: {args: [3, 50],msg: "El nombre del rol debe tener entre 3 y 50 caracteres"},
+        is: {args:/^[a-z]+$/i,msg:"El nombre del rol solo puede contener letras"}
+      }
     },
   },
   {
