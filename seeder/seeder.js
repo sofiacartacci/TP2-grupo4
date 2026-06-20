@@ -1,4 +1,11 @@
-import { sequelize, Cine, Pelicula, Funcion } from "../models/index.js";
+import {
+  sequelize,
+  Cine,
+  Pelicula,
+  Funcion,
+  User,
+  Rol,
+} from "../models/index.js";
 
 const ejecutarSeeder = async () => {
   try {
@@ -7,10 +14,66 @@ const ejecutarSeeder = async () => {
     await sequelize.sync();
 
     await Funcion.destroy({ where: {} });
+    await User.destroy({ where: {} });
     await Pelicula.destroy({ where: {} });
     await Cine.destroy({ where: {} });
 
     console.log("Datos anteriores eliminados.");
+
+    const [rolUser] = await Rol.findOrCreate({
+      where: { nombre: "user" },
+      defaults: { nombre: "user" },
+    });
+
+    await User.bulkCreate([
+      {
+        nombre: "Cliente",
+        apellido: "Uno",
+        email: "cliente1@gmail.com",
+        password: "hola1234",
+        rolId: rolUser.id,
+        telefono: "1123456781",
+        fechaNacimiento: "1995-01-10",
+      },
+      {
+        nombre: "Cliente",
+        apellido: "Dos",
+        email: "cliente2@gmail.com",
+        password: "hola1234",
+        rolId: rolUser.id,
+        telefono: "1123456782",
+        fechaNacimiento: "1994-02-15",
+      },
+      {
+        nombre: "Cliente",
+        apellido: "Tres",
+        email: "cliente3@gmail.com",
+        password: "hola1234",
+        rolId: rolUser.id,
+        telefono: "1123456783",
+        fechaNacimiento: "1993-03-20",
+      },
+      {
+        nombre: "Cliente",
+        apellido: "Cuatro",
+        email: "cliente4@gmail.com",
+        password: "hola1234",
+        rolId: rolUser.id,
+        telefono: "1123456784",
+        fechaNacimiento: "1992-04-25",
+      },
+      {
+        nombre: "Cliente",
+        apellido: "Cinco",
+        email: "cliente5@gmail.com",
+        password: "hola1234",
+        rolId: rolUser.id,
+        telefono: "1123456785",
+        fechaNacimiento: "1991-05-30",
+      },
+    ]);
+
+    console.log("Usuarios creados.");
 
     const cines = await Cine.bulkCreate([
       {
