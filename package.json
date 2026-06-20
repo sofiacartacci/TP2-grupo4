@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file .env.dev --watch .",
-    "start": "node --env-file .env ."
+    "start": "node --env-file .env .",
+    "seed": "node --env-file .env.dev seeder/seeder.js"
   },
   "keywords": [],
   "author": "",
