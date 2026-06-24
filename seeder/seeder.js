@@ -71,7 +71,8 @@ const ejecutarSeeder = async () => {
         telefono: "1123456785",
         fechaNacimiento: "1991-05-30",
       },
-    ]);
+    ], {individualHooks:true}
+  );
 
     console.log("Usuarios creados.");
 
