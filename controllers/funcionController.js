@@ -90,6 +90,19 @@ class FuncionController {
         throw error;
       }
 
+      if (
+        funcionExistente.fecha === fecha &&
+        funcionExistente.hora === hora.trim() &&
+        (funcionExistente.sala ?? null) === (sala ?? null) &&
+        Number(funcionExistente.precio) === Number(precio) &&
+        funcionExistente.cineId === Number(cineId) &&
+        funcionExistente.peliculaId === Number(peliculaId)
+      ) {
+        throw new Error(
+          "Los datos nuevos son iguales a los actuales, no hay cambios para guardar"
+        );
+      }
+
       const funcion = await this.funcionService.updateFuncion(id, {
         fecha, hora: hora.trim(), sala, precio, cineId: Number(cineId),
         peliculaId: Number(peliculaId),

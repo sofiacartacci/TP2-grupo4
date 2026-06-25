@@ -78,6 +78,17 @@ class PeliculaController {
         throw error;
       }
 
+      if (
+        peliculaExistente.titulo === titulo.trim() &&
+        peliculaExistente.duracion === Number(duracion) &&
+        (peliculaExistente.genero ?? null) === (genero ?? null) &&
+        (peliculaExistente.sinopsis ?? null) === (sinopsis ?? null)
+      ) {
+        throw new Error(
+          "Los datos nuevos son iguales a los actuales, no hay cambios para guardar"
+        );
+      }
+
       const pelicula = await this.peliculaService.updatePelicula(id, {
         titulo: titulo.trim(), duracion: Number(duracion), genero, sinopsis,
       });
