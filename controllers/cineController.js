@@ -73,6 +73,15 @@ class CineController {
         throw error;
       }
 
+      if (
+        cineExistente.nombre === nombre.trim() &&
+        cineExistente.direccion === direccion.trim()
+      ) {
+        throw new Error(
+          "Los datos nuevos son iguales a los actuales, no hay cambios para guardar"
+        );
+      }
+
       const cine = await this.cineService.updateCine(id, {
         nombre: nombre.trim(),
         direccion: direccion.trim(),
